@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>타자 게임</title>
+    <style>
+        body {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        p#sentenceDisplay {
+            font-size: 25px; /* 원하는 크기로 조절하세요 */
+        }
+   
+        #input {
+            height: 30px;
+            width: 400px; /* 원하는 크기로 조절하세요 */
+            font-size: 23px; /* 입력된 텍스트의 크기를 조절합니다 */
+            text-align: center; /* 입력된 텍스트를 가운데로 정렬합니다 */
+        }
+        p#result {
+            font-size: 22px; /* 결과 메시지의 텍스트 크기를 조절합니다 */
+        }
+    </style>
+</head>
+<body>
+    <h1>타자 게임</h1>
+    <button id="startButton" onclick="startGame()">시작</button>
+    <p id="roundDisplay"></p>
+    <p id="sentenceDisplay"></p>
+    <input type="text" id="input" oninput="checkInput()" disabled>
+    <p id="result"></p>
+    <button id="restartButton" onclick="restartGame()" style="display: none;">재시작</button>
+
+    <script>
+        let round = 0;
+        let bestRound = 0;
+        let prevWPM = 0;
+        let startTime, endTime;
+        const sentences = ["감자는 맛있다.", "바나나는 길다.", "사과는 빨갛다.", "딸기는 달다.", "토마토는 새콤하다.", "오늘 날씨는 정말 좋아요.", "내일은 무슨 요일인가요.", "빨간색은 제가 좋아하는 색상입니다.", "고양이는 귀엽지만 강아지도 좋아요.", "휴가 계획을 세워봐야겠어요.", "책을 읽는 것이 취미입니다.", "요리를 잘하려고 노력 중이에요.", "새로운 언어를 배우는 것은 어렵지만 흥미로워요.", "운동은 건강에 좋아요.", "음악을 듣는 것은 스트레스 해소에 도움이 돼요.", "나는 오늘 학교에 갔다.", "바다에서 파도 소리를 듣는 것이 좋아.", "저녁 식사 후에 커피를 마셔.", "봄에는 꽃들이 피어난다.", "주말에는 친구들과 나들이를 간다.", "영화를 보면서 감동을 느꼈다.", "나는 음악을 들으며 산책을 즐긴다.", "요리를 하면 스트레스가 풀린다.", "책을 읽는 것은 항상 나를 기쁘게 한다.", "야구 경기를 보는 것이 취미다."];
+
+        function startGame() {
+            round = 0;
+            bestRound = 0;
+            prevWPM = 0;
+            startRound();
+            document.getElementById("startButton").style.display = "none";
+            document.getElementById("restartButton").style.display = "none";
+        }
+
+        function startRound() {
+            if (round < sentences.length) {
+                document.getElementById("input").value = "";
+                document.getElementById("result").textContent = "";
+                document.getElementById("input").disabled = false;
+                startTime = new Date().getTime();
+
+                // 문장을 무작위로 선택
+                const randomIndex = Math.floor(Math.random() * sentences.length);
+                document.getElementById("sentenceDisplay").textContent = sentences[randomIndex];
+
+                document.getElementById("wpm").textContent = "0"; // 문장 시작 시 WPM 초기화
+            } else {
+                document.getElementById("roundDisplay").textContent = "";
+                document.getElementById("result").textContent = `게임 종료! 최고 속도: ${bestRound.toFixed(2)} WPM`;
+                document.getElementById("input").disabled = true;
+                document.getElementById("restartButton").style.display = "block";
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function checkInput() {
+            const sentence = document.getElementById("sentenceDisplay").textContent;
+            const input = document.getElementById("input").value;
+
+            if (sentence === input) {
+                endTime = new Date().getTime();
+                const totalTime = (endTime - startTime) / 1000;
+                const words = sentence.split(" ").length;
+                const wpm = (words / totalTime) * 60;
+
+                if (round < sentences.length) {
+                    if (wpm > prevWPM) {
+                        prevWPM = wpm;
+                        startRound();
+                    } else {
+                        document.getElementById("result").textContent = "이전 속도보다 낮아요. 게임 종료!"; 
+                        document.getElementById("input").disabled = true;
+                        document.getElementById("restartButton").style.display = "block";
+                    }
+                } else {
+                    
+                }
+            }
+        }
+    </script>
+</body>
+</html>
